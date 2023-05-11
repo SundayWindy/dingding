@@ -1,0 +1,34 @@
+kind: pipeline
+type: ssh
+name: ci
+
+trigger:
+  ref:
+    include:
+      - refs/tags/v[0-9]*
+
+server:
+  host:
+    from_secret: be_runner
+  user:
+    from_secret: runner_user
+  ssh_key:
+    from_secret: runner_key
+
+steps:
+  - name: build
+    commands:
+      - IMAGE_TAG=${DRONE_COMMIT_REF##*/} make docker-build
+    environment:
+      PIP_INDEX_URL:
+        from_secret: pip_index_url
+
+  - name: push
+    commands:
+      - echo $DOCKER_PASSWORD | docker login dcr.ruicore.io -u $DOCKER_USERNAME --password-stdin
+      - IMAGE_TAG=${DRONE_COMMIT_REF##*/} make docker-push
+    environment:
+      DOCKER_USERNAME:
+        from_secret: docker_username
+      DOCKER_PASSWORD:
+        from_secret: docker_password

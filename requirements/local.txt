@@ -1,0 +1,4 @@
+-r base.txt
+
+pre-commit==2.20.0
+pylint==3.0.0a5

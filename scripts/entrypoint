@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+export INIT=${INIT:='yes'}
+
+if [ "${INIT}" = "yes" ]; then
+    sh /scripts/init.sh
+fi
+
+exec "$@"
